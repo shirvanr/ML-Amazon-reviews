@@ -1,0 +1,59 @@
+{
+  "model_name": "tfidf_logreg",
+  "trained_at": "2026-07-02T20:11:51.844798+00:00",
+  "data_path": "/media/sf_claude/test/interviews/interview_trustpilot/trustpilot_case_study/data/Books_10k.jsonl",
+  "n_reviews": 10000,
+  "n_train_sentences": 54528,
+  "n_test_sentences": 14177,
+  "test_size": 0.2,
+  "seed": 42,
+  "sklearn_version": "1.4.2",
+  "metrics": {
+    "accuracy": 0.552373562813007,
+    "macro_f1": 0.524837620413327,
+    "per_class": {
+      "negative": {
+        "precision": 0.5897932816537468,
+        "recall": 0.5701498751040799,
+        "f1-score": 0.5798052497883149,
+        "support": 4804.0
+      },
+      "neutral": {
+        "precision": 0.34531748332850104,
+        "recall": 0.3620060790273556,
+        "f1-score": 0.3534649057723698,
+        "support": 3290.0
+      },
+      "positive": {
+        "precision": 0.641190006574622,
+        "recall": 0.6412954134473122,
+        "f1-score": 0.6412427056792964,
+        "support": 6083.0
+      }
+    },
+    "confusion_matrix": {
+      "labels": [
+        "negative",
+        "neutral",
+        "positive"
+      ],
+      "matrix": [
+        [
+          2739,
+          1058,
+          1007
+        ],
+        [
+          923,
+          1191,
+          1176
+        ],
+        [
+          982,
+          1200,
+          3901
+        ]
+      ]
+    }
+  }
+}

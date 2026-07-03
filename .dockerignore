@@ -1,0 +1,15 @@
+# The image only needs src/, models/ and requirements.txt
+data/
+tests/
+scripts/
+.git/
+.gitignore
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.venv/
+venv/
+README.md
+Makefile
+requirements-dev.txt
