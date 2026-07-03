@@ -2,6 +2,7 @@
 data/
 tests/
 scripts/
+.github/
 .git/
 .gitignore
 __pycache__/

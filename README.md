@@ -1,5 +1,7 @@
 # Review Sentiment Service
 
+[![CI](https://github.com/shirvanr/ML-Amazon-reviews/actions/workflows/ci.yml/badge.svg)](https://github.com/shirvanr/ML-Amazon-reviews/actions/workflows/ci.yml)
+
 An end-to-end ML system that classifies book-review **sentences** as
 `positive`, `neutral` or `negative`, and serves predictions over HTTP within a
 p99 latency budget of 300 ms.
@@ -145,6 +147,20 @@ Latency, measured client-side with real review texts
 - **`/health`** reports whether the model is loaded, suitable as a
   readiness/liveness probe.
 
+## Continuous integration
+
+Every push runs the GitHub Actions workflow (`.github/workflows/ci.yml`) in
+two stages:
+
+1. **quality** — ruff lint plus the unit and API test suite.
+2. **train-and-serve** — retrains the model from the committed dataset,
+   builds the Docker image around the fresh model, starts the container and
+   smoke tests `/health` and `/predict` against it.
+
+The second stage is the ML-specific part: it proves the entire pipeline —
+data → training → image → serving — is reproducible from a clean checkout on
+every change, not just that the unit tests pass.
+
 ## Running this in production
 
 What the path to a cloud deployment looks like (the code already supports it):
@@ -157,10 +173,12 @@ What the path to a cloud deployment looks like (the code already supports it):
 2. **Deployment** — the container is stateless and configured via env vars,
    so it maps directly onto Cloud Run / ECS / Kubernetes with horizontal
    scaling behind a load balancer.
-3. **CI/CD** — lint, tests and image build in GitHub Actions on every PR;
-   training as a scheduled or data-triggered pipeline step with an automatic
-   quality gate (block promotion if macro-F1 regresses against the current
-   production model).
+3. **CI/CD** — the included GitHub Actions workflow already lints, tests,
+   retrains and smoke tests the serving image on every push; production would
+   add pushing the image to a registry and deploying it, plus training as a
+   scheduled or data-triggered pipeline step with an automatic quality gate
+   (block promotion if macro-F1 regresses against the current production
+   model).
 4. **Monitoring** — export the `/metrics` counters to Prometheus/Grafana with
    alerts on latency SLO burn and prediction-distribution shift; sample
    predictions to a store for periodic human labelling to measure real
@@ -184,6 +202,7 @@ What the path to a cloud deployment looks like (the code already supports it):
 ## Project layout
 
 ```
+├── .github/workflows/ci.yml    # CI: lint + tests, then train + image + smoke test
 ├── data/Books_10k.jsonl        # provided dataset (committed so the repo runs end-to-end)
 ├── src/
 │   ├── config.py               # env-var driven settings
