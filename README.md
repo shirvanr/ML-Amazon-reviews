@@ -47,6 +47,7 @@ make install            # pip install -r requirements-dev.txt
 make train              # trains and evaluates; writes models/ (~10 s)
 make serve              # starts the API on http://127.0.0.1:8000
 make latency            # p99 latency check against the running service
+make latency-load       # same check under 50 parallel clients
 make test               # unit + API tests (pytest)
 make lint               # ruff
 ```
@@ -104,11 +105,18 @@ the same noise, which is why effort went into the system rather than the
 model (the brief also explicitly de-emphasises model choice).
 
 Latency, measured client-side with real review texts
-(`scripts/latency_check.py`, 300 requests after warmup, local machine):
+(`scripts/latency_check.py`, single uvicorn worker, local machine):
 
-| p50     | p95     | p99     | SLO        |
-|---------|---------|---------|------------|
-| 2.7 ms  | 3.7 ms  | 4.5 ms  | p99 < 300 ms ✅ |
+| load                | throughput | p50    | p95     | p99     | SLO (p99 < 300 ms) |
+|---------------------|------------|--------|---------|---------|--------------------|
+| sequential          | 386 req/s  | 2.5 ms | 3.5 ms  | 4.1 ms  | ✅ pass            |
+| 50 parallel clients | 532 req/s  | 89 ms  | 134 ms  | 153 ms  | ✅ pass            |
+
+The sequential run is the best-case number; the concurrent run is the one
+that matters for capacity planning. Even with 50 clients hammering a single
+worker, p99 stays at about half the budget — and since the service is
+stateless, the scaling path when traffic outgrows one worker is mechanical:
+more uvicorn workers (`--workers N`) or more replicas behind a load balancer.
 
 ## Design decisions
 

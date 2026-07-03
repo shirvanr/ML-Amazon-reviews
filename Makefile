@@ -1,6 +1,6 @@
 PYTHON ?= python3
 
-.PHONY: install train serve test lint latency docker-build docker-run
+.PHONY: install train serve test lint latency latency-load docker-build docker-run
 
 install:
 	$(PYTHON) -m pip install -r requirements-dev.txt
@@ -19,6 +19,9 @@ lint:
 
 latency:
 	$(PYTHON) scripts/latency_check.py
+
+latency-load:
+	$(PYTHON) scripts/latency_check.py --concurrency 50 --requests 1000
 
 docker-build:
 	docker build -t sentiment-service .
